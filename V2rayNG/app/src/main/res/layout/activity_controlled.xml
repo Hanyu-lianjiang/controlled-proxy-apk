@@ -52,15 +52,6 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:includeFontPadding="false"
-            android:text="@string/controlled_login_credential_notice"
-            android:textColor="@color/controlled_text_muted"
-            android:textSize="12sp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -164,7 +155,7 @@
                 android:layout_marginTop="14dp"
                 android:gravity="center"
                 android:includeFontPadding="false"
-                android:text="@string/controlled_backend_hidden"
+                android:text="@string/controlled_login_credential_notice"
                 android:textColor="@color/controlled_text_muted"
                 android:textSize="12sp" />
 

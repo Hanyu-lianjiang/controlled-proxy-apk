@@ -96,6 +96,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private var lastRemoteTrafficRefreshAt = 0L
     private var lastNodeRenderSignature = ""
     private var activeDashboardTab = DashboardTab.PROXY
+    private var pendingAppUpdate: CheckUpdateResult? = null
 
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == RESULT_OK) {
@@ -136,7 +137,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.btnQuickAccount.setOnClickListener {
             requestActivityLauncher.launch(Intent(this, ControlledActivity::class.java))
         }
-        binding.btnCheckUpdate.setOnClickListener { checkForAppUpdate() }
+        binding.btnCheckUpdate.setOnClickListener { handleUpdateClick() }
         binding.navProxy.setOnClickListener { showDashboardTab(DashboardTab.PROXY) }
         binding.navNodes.setOnClickListener { showDashboardTab(DashboardTab.NODES) }
         binding.navMine.setOnClickListener { showDashboardTab(DashboardTab.MINE) }
@@ -150,6 +151,8 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         mainViewModel.reloadServerList()
         showDashboardTab(DashboardTab.PROXY)
         refreshSimpleDashboard()
+        refreshUpdateButton()
+        checkForAppUpdate(auto = true)
 
         if (!ControlledSession.hasToken(this)) {
             requestActivityLauncher.launch(Intent(this, ControlledActivity::class.java))
@@ -758,12 +761,25 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             ?: node?.countryName?.takeIf { it.isNotBlank() }
             ?: "线路 ${index + 1}"
 
-    private fun checkForAppUpdate() {
-        toast(R.string.update_checking_for_update)
-        showLoading()
+    private fun handleUpdateClick() {
+        pendingAppUpdate?.takeIf { it.hasUpdate }?.let {
+            showAppUpdateDialog(it)
+            return
+        }
+        checkForAppUpdate(auto = false)
+    }
+
+    private fun checkForAppUpdate(auto: Boolean) {
+        if (!auto) {
+            toast(R.string.update_checking_for_update)
+            showLoading()
+        }
         lifecycleScope.launch {
             try {
                 val result = UpdateCheckerManager.checkForUpdate(includePreRelease = false)
+                pendingAppUpdate = result.takeIf { it.hasUpdate }
+                refreshUpdateButton()
+                if (auto) return@launch
                 if (result.hasUpdate) {
                     showAppUpdateDialog(result)
                 } else {
@@ -771,11 +787,25 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 }
             } catch (e: Exception) {
                 LogUtil.e(AppConfig.TAG, "Failed to check app update", e)
-                toastError(e.message ?: getString(R.string.toast_failure))
+                if (!auto) {
+                    toastError(e.message ?: getString(R.string.toast_failure))
+                }
             } finally {
-                hideLoading()
+                if (!auto) {
+                    hideLoading()
+                }
             }
         }
+    }
+
+    private fun refreshUpdateButton() {
+        binding.btnCheckUpdate.text = getString(
+            if (pendingAppUpdate?.hasUpdate == true) {
+                R.string.controlled_mine_online_update
+            } else {
+                R.string.controlled_mine_check_update
+            }
+        )
     }
 
     private fun showAppUpdateDialog(result: CheckUpdateResult) {

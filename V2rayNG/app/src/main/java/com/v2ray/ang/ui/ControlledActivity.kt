@@ -124,6 +124,6 @@ class ControlledActivity : BaseActivity() {
     }
 
     private fun refreshStatus() {
-        binding.tvStatus.text = getString(R.string.controlled_backend_hidden)
+        binding.tvStatus.text = getString(R.string.controlled_login_credential_notice)
     }
 }
