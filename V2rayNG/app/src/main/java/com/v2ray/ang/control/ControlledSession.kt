@@ -155,6 +155,12 @@ object ControlledSession {
         return trafficUsedBytes(context) / 1024.0 / 1024.0 / 1024.0
     }
 
+    fun trafficRemainingGb(context: Context): Double? {
+        val limitGb = trafficLimitGb(context)
+        if (limitGb <= 0.0) return null
+        return (limitGb - trafficUsedGb(context)).coerceAtLeast(0.0)
+    }
+
     fun formatGb(value: Double): String =
         if (value >= 100) value.toInt().toString() else String.format(java.util.Locale.US, "%.2f", value).trimEnd('0').trimEnd('.')
 

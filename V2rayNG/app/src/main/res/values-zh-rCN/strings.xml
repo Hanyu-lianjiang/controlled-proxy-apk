@@ -41,9 +41,15 @@
     <string name="controlled_nodes_title">选择线路</string>
     <string name="controlled_nodes_all">全部节点</string>
     <string name="controlled_nodes_selected_format">当前：%1$s</string>
+    <string name="controlled_nodes_test_tcp">测试 TCP</string>
+    <string name="controlled_nodes_test_testing">测试中</string>
+    <string name="controlled_nodes_test_success">%1$dms</string>
+    <string name="controlled_nodes_test_failed">失败</string>
+    <string name="controlled_nodes_test_no_nodes">暂无可测试节点</string>
+    <string name="controlled_nodes_test_done">TCP 测试完成</string>
     <string name="controlled_home_sync">同步线路</string>
     <string name="controlled_home_account">账号授权</string>
-    <string name="controlled_home_usage">授权节点</string>
+    <string name="controlled_home_usage">剩余流量</string>
     <string name="controlled_home_unlimited">不限</string>
     <string name="controlled_home_authorized">已授权</string>
     <string name="controlled_home_quota_empty">授权失效</string>
@@ -58,7 +64,7 @@
     <string name="controlled_mine_check_update">检查更新</string>
     <string name="controlled_mine_status_format">授权状态：%1$s</string>
     <string name="controlled_mine_expire_format">到期时间：%1$s</string>
-    <string name="controlled_mine_traffic_format">授权节点：%1$s</string>
+    <string name="controlled_mine_traffic_format">剩余流量：%1$s</string>
     <string name="controlled_mine_device_format">用户名：%1$s</string>
     <string name="controlled_mine_last_sync_format">上次同步：%1$s</string>
     <string name="controlled_mine_never_sync">从未同步</string>

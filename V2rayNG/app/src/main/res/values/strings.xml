@@ -42,9 +42,15 @@
     <string name="controlled_nodes_title">Select line</string>
     <string name="controlled_nodes_all">All nodes</string>
     <string name="controlled_nodes_selected_format">Selected: %1$s</string>
+    <string name="controlled_nodes_test_tcp">Test TCP</string>
+    <string name="controlled_nodes_test_testing">Testing</string>
+    <string name="controlled_nodes_test_success">%1$dms</string>
+    <string name="controlled_nodes_test_failed">Failed</string>
+    <string name="controlled_nodes_test_no_nodes">No nodes to test</string>
+    <string name="controlled_nodes_test_done">TCP test finished</string>
     <string name="controlled_home_sync">Sync</string>
     <string name="controlled_home_account">Account</string>
-    <string name="controlled_home_usage">Authorized nodes</string>
+    <string name="controlled_home_usage">Remaining traffic</string>
     <string name="controlled_home_unlimited">Unlimited</string>
     <string name="controlled_home_authorized">Authorized</string>
     <string name="controlled_home_quota_empty">Expired</string>
@@ -59,7 +65,7 @@
     <string name="controlled_mine_check_update">Check for update</string>
     <string name="controlled_mine_status_format">Status: %1$s</string>
     <string name="controlled_mine_expire_format">Expires: %1$s</string>
-    <string name="controlled_mine_traffic_format">Nodes: %1$s</string>
+    <string name="controlled_mine_traffic_format">Remaining traffic: %1$s</string>
     <string name="controlled_mine_device_format">Username: %1$s</string>
     <string name="controlled_mine_last_sync_format">Last sync: %1$s</string>
     <string name="controlled_mine_never_sync">Never synced</string>

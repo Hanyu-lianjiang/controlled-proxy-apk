@@ -10,6 +10,7 @@
     <color name="colorIndicator">@color/md_theme_primary</color>
     <color name="controlled_connect">#3157E8</color>
     <color name="controlled_connect_active">#0F8B6D</color>
+    <color name="controlled_danger">#D92D20</color>
     <color name="controlled_home_top">#F4F8FF</color>
     <color name="controlled_home_bottom">#E9FFF6</color>
     <color name="controlled_ink">#101522</color>

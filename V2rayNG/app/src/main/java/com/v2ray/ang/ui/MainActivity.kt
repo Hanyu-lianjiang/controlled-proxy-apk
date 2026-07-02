@@ -54,17 +54,28 @@ import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.net.InetSocketAddress
+import java.net.Socket
+import kotlin.system.measureTimeMillis
 
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private enum class DashboardTab {
         PROXY,
         NODES,
         MINE,
+    }
+
+    private sealed class TcpTestState {
+        data object Testing : TcpTestState()
+        data class Success(val delayMillis: Long) : TcpTestState()
+        data object Failed : TcpTestState()
     }
 
     private val binding by lazy {
@@ -75,6 +86,8 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private lateinit var groupPagerAdapter: GroupPagerAdapter
     private var tabMediator: TabLayoutMediator? = null
     private var dashboardRefreshJob: Job? = null
+    private var tcpTestJob: Job? = null
+    private val tcpTestResults = mutableMapOf<String, TcpTestState>()
     private var lastRemoteTrafficRefreshAt = 0L
     private var activeDashboardTab = DashboardTab.PROXY
 
@@ -113,6 +126,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.fab.setOnClickListener { handlePrimaryConnectClick() }
         binding.btnPrimaryConnect.setOnClickListener { handlePrimaryConnectClick() }
         binding.btnQuickSync.setOnClickListener { syncAuthorizedNodes(showToast = true) }
+        binding.btnTestTcp.setOnClickListener { testAuthorizedNodeTcpConnections() }
         binding.btnQuickAccount.setOnClickListener {
             requestActivityLauncher.launch(Intent(this, ControlledActivity::class.java))
         }
@@ -391,7 +405,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         val selectedGuid = MmkvManager.getSelectServer()
 
         binding.tvAccountState.text = accountBadgeText()
-        refreshAuthorizedNodes(controlledNodes)
+        refreshTrafficUsage()
         binding.tvProxyCurrentNode.text = selectedNodeLabel(controlledServers, controlledNodes, selectedGuid)
         renderNodePage(controlledServers, controlledNodes, selectedGuid)
         refreshMinePage()
@@ -403,29 +417,46 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         return "$label\n${getString(R.string.controlled_home_authorized)}"
     }
 
-    private fun refreshAuthorizedNodes(nodes: List<ControlledNode> = ControlledSession.getNodes(this)) {
-        binding.tvTrafficUsage.text = if (nodes.isEmpty()) {
-            getString(R.string.controlled_home_no_authorized_nodes)
-        } else {
-            resources.getQuantityString(R.plurals.controlled_authorized_nodes_count, nodes.size, nodes.size)
-        }
+    private fun refreshTrafficUsage() {
+        binding.tvTrafficUsage.text = trafficUsageText()
         binding.progressTraffic.max = 1000
-        binding.progressTraffic.progress = if (nodes.isEmpty()) 0 else 1000
+        binding.progressTraffic.progress = trafficProgress()
     }
+
+    private fun trafficUsageText(): String {
+        if (!ControlledSession.hasToken(this)) return getString(R.string.controlled_not_logged_in)
+        val limitGb = ControlledSession.trafficLimitGb(this)
+        val usedGb = ControlledSession.trafficUsedGb(this)
+        val remainingGb = ControlledSession.trafficRemainingGb(this)
+        return if (limitGb > 0.0 && remainingGb != null) {
+            "${formatTrafficGb(remainingGb)} GB / ${formatTrafficGb(limitGb)} GB"
+        } else {
+            "${formatTrafficGb(usedGb)} GB / ${getString(R.string.controlled_home_unlimited)}"
+        }
+    }
+
+    private fun trafficProgress(): Int {
+        val limitGb = ControlledSession.trafficLimitGb(this)
+        if (limitGb <= 0.0) return 0
+        return ((ControlledSession.trafficUsedGb(this) / limitGb) * 1000).toInt().coerceIn(0, 1000)
+    }
+
+    private fun formatTrafficGb(value: Double): String =
+        ControlledSession.formatGb(value)
 
     private fun startDashboardAutoRefresh() {
         if (dashboardRefreshJob?.isActive == true) return
         dashboardRefreshJob = lifecycleScope.launch {
             while (isActive) {
                 binding.tvAccountState.text = accountBadgeText()
-                refreshAuthorizedNodes()
+                refreshTrafficUsage()
                 refreshMinePage()
                 val now = System.currentTimeMillis()
                 if (mainViewModel.isRunning.value == true && now - lastRemoteTrafficRefreshAt >= 3_000L) {
                     lastRemoteTrafficRefreshAt = now
                     refreshTrafficStatusFromBackend()
                     binding.tvAccountState.text = accountBadgeText()
-                    refreshAuthorizedNodes()
+                    refreshTrafficUsage()
                     refreshMinePage()
                 }
                 delay(1_000)
@@ -533,13 +564,88 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 ellipsize = android.text.TextUtils.TruncateAt.END
                 setTextColor(ContextCompat.getColor(this@MainActivity, R.color.controlled_ink))
             }
+            val tcpState = TextView(this).apply {
+                text = tcpTestText(guid)
+                textSize = 13f
+                gravity = Gravity.CENTER
+                isVisible = text.isNotBlank()
+                setTextColor(ContextCompat.getColor(this@MainActivity, tcpTestTextColor(guid)))
+                layoutParams = LinearLayout.LayoutParams(dp(72), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                    leftMargin = dp(8)
+                }
+            }
 
             textColumn.addView(title)
             row.addView(flag)
             row.addView(textColumn)
+            row.addView(tcpState)
             binding.llNodeList.addView(row)
         }
     }
+
+    private fun testAuthorizedNodeTcpConnections() {
+        val serverIds = MmkvManager.decodeServerList(ControlledNodeSync.CONTROLLED_SUBSCRIPTION_ID)
+        if (serverIds.isEmpty()) {
+            toast(R.string.controlled_nodes_test_no_nodes)
+            return
+        }
+        if (tcpTestJob?.isActive == true) return
+
+        val targets = serverIds.map { guid ->
+            val profile = MmkvManager.decodeServerConfig(guid)
+            Triple(guid, profile?.server, profile?.serverPort)
+        }
+
+        tcpTestResults.clear()
+        targets.forEach { (guid, _, _) -> tcpTestResults[guid] = TcpTestState.Testing }
+        refreshSimpleDashboard()
+
+        tcpTestJob = lifecycleScope.launch {
+            binding.btnTestTcp.isEnabled = false
+            try {
+                val results = targets.map { (guid, host, port) ->
+                    async(Dispatchers.IO) {
+                        guid to testTcpConnection(host, port)
+                    }
+                }.awaitAll()
+                results.forEach { (guid, result) -> tcpTestResults[guid] = result }
+                refreshSimpleDashboard()
+                toast(R.string.controlled_nodes_test_done)
+            } finally {
+                binding.btnTestTcp.isEnabled = true
+            }
+        }
+    }
+
+    private fun testTcpConnection(host: String?, portText: String?): TcpTestState {
+        val normalizedHost = host?.trim()?.takeIf { it.isNotBlank() } ?: return TcpTestState.Failed
+        val port = portText?.trim()?.toIntOrNull()?.takeIf { it in 1..65535 } ?: return TcpTestState.Failed
+        return try {
+            val elapsed = measureTimeMillis {
+                Socket().use { socket ->
+                    socket.connect(InetSocketAddress(normalizedHost, port), 3_000)
+                }
+            }
+            TcpTestState.Success(elapsed)
+        } catch (_: Exception) {
+            TcpTestState.Failed
+        }
+    }
+
+    private fun tcpTestText(guid: String): String =
+        when (val state = tcpTestResults[guid]) {
+            TcpTestState.Testing -> getString(R.string.controlled_nodes_test_testing)
+            is TcpTestState.Success -> getString(R.string.controlled_nodes_test_success, state.delayMillis)
+            TcpTestState.Failed -> getString(R.string.controlled_nodes_test_failed)
+            null -> ""
+        }
+
+    private fun tcpTestTextColor(guid: String): Int =
+        when (tcpTestResults[guid]) {
+            is TcpTestState.Success -> R.color.controlled_connect
+            TcpTestState.Failed -> R.color.controlled_danger
+            else -> R.color.controlled_text_muted
+        }
 
     private fun selectedNodeLabel(
         serverIds: List<String>,
@@ -685,7 +791,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         )
         binding.tvMineTraffic.text = getString(
             R.string.controlled_mine_traffic_format,
-            resources.getQuantityString(R.plurals.controlled_authorized_nodes_count, ControlledSession.getNodes(this).size, ControlledSession.getNodes(this).size)
+            trafficUsageText()
         )
         binding.tvMineDevice.text = getString(
             R.string.controlled_mine_device_format,
