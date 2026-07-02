@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit
 
 data class ControlledUser(
     val id: String,
+    val username: String,
     val label: String,
     val enabled: Boolean,
     val expiresAt: String?,
@@ -64,8 +65,9 @@ class ControlledApi(private val baseUrl: String) {
         .callTimeout(30, TimeUnit.SECONDS)
         .build()
 
-    fun login(licenseCode: String, deviceId: String, appVersion: String): ControlledLoginResult {
+    fun login(username: String, licenseCode: String, deviceId: String, appVersion: String): ControlledLoginResult {
         val body = JSONObject()
+            .put("username", username)
             .put("licenseCode", licenseCode)
             .put("deviceId", deviceId)
             .put("appVersion", appVersion)
@@ -167,6 +169,7 @@ class ControlledApi(private val baseUrl: String) {
     private fun parseUser(json: JSONObject): ControlledUser =
         ControlledUser(
             id = json.getString("id"),
+            username = json.optString("username").ifBlank { json.optString("label") },
             label = json.optString("label"),
             enabled = json.optBoolean("enabled", false),
             expiresAt = json.optString("expiresAt").ifBlank { null },

@@ -391,7 +391,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         val selectedGuid = MmkvManager.getSelectServer()
 
         binding.tvAccountState.text = accountBadgeText()
-        refreshTrafficUsage()
+        refreshAuthorizedNodes(controlledNodes)
         binding.tvProxyCurrentNode.text = selectedNodeLabel(controlledServers, controlledNodes, selectedGuid)
         renderNodePage(controlledServers, controlledNodes, selectedGuid)
         refreshMinePage()
@@ -400,46 +400,32 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private fun accountBadgeText(): String {
         if (!ControlledSession.hasToken(this)) return getString(R.string.controlled_not_logged_in)
         val label = ControlledSession.userLabel(this).ifBlank { getString(R.string.controlled_home_account) }
-        return if (ControlledSession.trafficExceeded(this)) {
-            "$label\n${getString(R.string.controlled_home_quota_empty)}"
-        } else {
-            "$label\n${getString(R.string.controlled_home_authorized)}"
-        }
+        return "$label\n${getString(R.string.controlled_home_authorized)}"
     }
 
-    private fun refreshTrafficUsage() {
-        val usedGb = ControlledSession.trafficUsedGb(this)
-        val limitGb = ControlledSession.trafficLimitGb(this)
-        binding.tvTrafficUsage.text = if (limitGb > 0.0) {
-            "${formatTrafficGb(usedGb)} GB / ${formatTrafficGb(limitGb)} GB"
+    private fun refreshAuthorizedNodes(nodes: List<ControlledNode> = ControlledSession.getNodes(this)) {
+        binding.tvTrafficUsage.text = if (nodes.isEmpty()) {
+            getString(R.string.controlled_home_no_authorized_nodes)
         } else {
-            "${formatTrafficGb(usedGb)} GB / ${getString(R.string.controlled_home_unlimited)}"
+            resources.getQuantityString(R.plurals.controlled_authorized_nodes_count, nodes.size, nodes.size)
         }
-
         binding.progressTraffic.max = 1000
-        binding.progressTraffic.progress = if (limitGb > 0.0) {
-            ((usedGb / limitGb) * 1000).toInt().coerceIn(0, 1000)
-        } else {
-            0
-        }
+        binding.progressTraffic.progress = if (nodes.isEmpty()) 0 else 1000
     }
-
-    private fun formatTrafficGb(value: Double): String =
-        ControlledSession.formatGb(value)
 
     private fun startDashboardAutoRefresh() {
         if (dashboardRefreshJob?.isActive == true) return
         dashboardRefreshJob = lifecycleScope.launch {
             while (isActive) {
                 binding.tvAccountState.text = accountBadgeText()
-                refreshTrafficUsage()
+                refreshAuthorizedNodes()
                 refreshMinePage()
                 val now = System.currentTimeMillis()
                 if (mainViewModel.isRunning.value == true && now - lastRemoteTrafficRefreshAt >= 3_000L) {
                     lastRemoteTrafficRefreshAt = now
                     refreshTrafficStatusFromBackend()
                     binding.tvAccountState.text = accountBadgeText()
-                    refreshTrafficUsage()
+                    refreshAuthorizedNodes()
                     refreshMinePage()
                 }
                 delay(1_000)
@@ -457,7 +443,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 ControlledApi(baseUrl).report(token, 0L, 0L, MmkvManager.getSelectServer())
             }
             result.user?.let { ControlledSession.saveAuth(this, baseUrl, token, it) }
-            if (!result.allowed || result.user?.trafficExceeded == true) {
+            if (!result.allowed) {
                 ControlledNodeSync.clear(this)
                 CoreServiceManager.stopVService(this)
                 mainViewModel.reloadServerList()
@@ -688,7 +674,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.tvMineStatus.text = getString(
             R.string.controlled_mine_status_format,
             if (loggedIn) {
-                if (ControlledSession.trafficExceeded(this)) getString(R.string.controlled_home_quota_empty) else getString(R.string.controlled_home_authorized)
+                getString(R.string.controlled_home_authorized)
             } else {
                 getString(R.string.controlled_not_logged_in)
             }
@@ -699,11 +685,11 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         )
         binding.tvMineTraffic.text = getString(
             R.string.controlled_mine_traffic_format,
-            binding.tvTrafficUsage.text.toString()
+            resources.getQuantityString(R.plurals.controlled_authorized_nodes_count, ControlledSession.getNodes(this).size, ControlledSession.getNodes(this).size)
         )
         binding.tvMineDevice.text = getString(
             R.string.controlled_mine_device_format,
-            ControlledSession.getDeviceId(this)
+            ControlledSession.username(this).ifBlank { ControlledSession.userLabel(this) }
         )
         val lastSync = ControlledSession.lastSyncAt(this)
         binding.tvMineLastSync.text = getString(

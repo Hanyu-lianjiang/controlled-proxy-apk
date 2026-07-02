@@ -11,6 +11,8 @@
     <string name="pull_down_to_refresh">请下拉刷新!</string>
     <string name="controlled_title">后台授权</string>
     <string name="controlled_backend_url">后台地址</string>
+    <string name="controlled_username">用户名</string>
+    <string name="controlled_username_hint">输入自定义用户名</string>
     <string name="controlled_license_code">授权码</string>
     <string name="controlled_license_code_hint">输入授权码</string>
     <string name="controlled_device_id">设备 ID</string>
@@ -18,7 +20,7 @@
     <string name="controlled_login_and_sync">登录并同步节点</string>
     <string name="controlled_sync">同步授权节点</string>
     <string name="controlled_logout">退出并清空节点</string>
-    <string name="controlled_fill_required">请输入授权码</string>
+    <string name="controlled_fill_required">请输入用户名和授权码</string>
     <string name="controlled_login_first">请先登录</string>
     <string name="controlled_sync_success">已同步 %d 个节点</string>
     <string name="controlled_sync_failed">同步失败</string>
@@ -41,12 +43,12 @@
     <string name="controlled_nodes_selected_format">当前：%1$s</string>
     <string name="controlled_home_sync">同步线路</string>
     <string name="controlled_home_account">账号授权</string>
-    <string name="controlled_home_usage">已用流量</string>
+    <string name="controlled_home_usage">授权节点</string>
     <string name="controlled_home_unlimited">不限</string>
     <string name="controlled_home_authorized">已授权</string>
-    <string name="controlled_home_quota_empty">流量用完</string>
+    <string name="controlled_home_quota_empty">授权失效</string>
     <string name="controlled_home_more_nodes">还有 %d 条线路</string>
-    <string name="controlled_home_access_denied">授权已过期或流量已用完，请联系管理员。</string>
+    <string name="controlled_home_access_denied">授权已过期或被禁用，请联系管理员。</string>
     <string name="controlled_home_no_authorized_nodes">暂无可用授权节点。</string>
     <string name="controlled_tab_proxy">代理</string>
     <string name="controlled_tab_nodes">节点</string>
@@ -56,10 +58,13 @@
     <string name="controlled_mine_check_update">检查更新</string>
     <string name="controlled_mine_status_format">授权状态：%1$s</string>
     <string name="controlled_mine_expire_format">到期时间：%1$s</string>
-    <string name="controlled_mine_traffic_format">流量额度：%1$s</string>
-    <string name="controlled_mine_device_format">设备 ID：%1$s</string>
+    <string name="controlled_mine_traffic_format">授权节点：%1$s</string>
+    <string name="controlled_mine_device_format">用户名：%1$s</string>
     <string name="controlled_mine_last_sync_format">上次同步：%1$s</string>
     <string name="controlled_mine_never_sync">从未同步</string>
+    <plurals name="controlled_authorized_nodes_count">
+        <item quantity="other">%d 个节点</item>
+    </plurals>
 
     <!-- Notifications -->
     <string name="notification_action_stop_v2ray">停止</string>

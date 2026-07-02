@@ -67,7 +67,7 @@ object ControlledTrafficReporter {
             val result = ControlledApi(baseUrl).report(token, txBytes, rxBytes, MmkvManager.getSelectServer())
             result.user?.let { ControlledSession.saveAuth(context, baseUrl, token, it) }
 
-            if (!result.allowed || result.user?.trafficExceeded == true) {
+            if (!result.allowed) {
                 ControlledNodeSync.clear(context)
                 CoreServiceManager.stopVService(context)
             }

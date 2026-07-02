@@ -25,6 +25,7 @@ class ControlledActivity : BaseActivity() {
         setContentViewWithToolbar(binding.root, showHomeAsUp = true, title = getString(R.string.controlled_title))
 
         binding.etBackendUrl.setText(ControlledSession.getBaseUrl(this))
+        binding.etUsername.setText(ControlledSession.username(this))
         binding.tvDeviceId.text = ControlledSession.getDeviceId(this)
         refreshStatus()
 
@@ -35,8 +36,9 @@ class ControlledActivity : BaseActivity() {
 
     private fun loginAndSync() {
         val baseUrl = ControlledSession.getBaseUrl(this)
+        val username = binding.etUsername.text?.toString()?.trim().orEmpty()
         val licenseCode = binding.etLicenseCode.text?.toString()?.trim().orEmpty()
-        if (licenseCode.isBlank()) {
+        if (username.isBlank() || licenseCode.isBlank()) {
             toast(R.string.controlled_fill_required)
             return
         }
@@ -46,7 +48,7 @@ class ControlledActivity : BaseActivity() {
             try {
                 val deviceId = ControlledSession.getDeviceId(this@ControlledActivity)
                 val loginResult = withContext(Dispatchers.IO) {
-                    ControlledApi(baseUrl).login(licenseCode, deviceId, BuildConfig.VERSION_NAME)
+                    ControlledApi(baseUrl).login(username, licenseCode, deviceId, BuildConfig.VERSION_NAME)
                 }
                 ControlledSession.saveAuth(this@ControlledActivity, baseUrl, loginResult.token, loginResult.user)
 

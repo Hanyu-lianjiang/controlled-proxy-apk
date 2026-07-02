@@ -11,6 +11,7 @@ object ControlledSession {
     private const val KEY_BASE_URL = "base_url"
     private const val KEY_TOKEN = "token"
     private const val KEY_DEVICE_ID = "device_id"
+    private const val KEY_USERNAME = "username"
     private const val KEY_USER_LABEL = "user_label"
     private const val KEY_EXPIRES_AT = "expires_at"
     private const val KEY_TRAFFIC_LIMIT_GB = "traffic_limit_gb"
@@ -27,8 +28,7 @@ object ControlledSession {
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-    fun getBaseUrl(context: Context): String =
-        prefs(context).getString(KEY_BASE_URL, DEFAULT_BASE_URL).orEmpty().ifBlank { DEFAULT_BASE_URL }
+    fun getBaseUrl(context: Context): String = DEFAULT_BASE_URL
 
     fun getToken(context: Context): String =
         prefs(context).getString(KEY_TOKEN, "").orEmpty()
@@ -48,7 +48,8 @@ object ControlledSession {
         prefs(context).edit()
             .putString(KEY_BASE_URL, baseUrl.trimEnd('/'))
             .putString(KEY_TOKEN, token)
-            .putString(KEY_USER_LABEL, user.label)
+            .putString(KEY_USERNAME, user.username)
+            .putString(KEY_USER_LABEL, user.label.ifBlank { user.username })
             .putString(KEY_EXPIRES_AT, user.expiresAt.orEmpty())
             .putString(KEY_TRAFFIC_LIMIT_GB, user.trafficLimitGb.toString())
             .putLong(KEY_TRAFFIC_LIMIT_MB, user.trafficLimitMb)
@@ -109,25 +110,20 @@ object ControlledSession {
     fun statusText(context: Context): String {
         val userLabel = prefs(context).getString(KEY_USER_LABEL, "").orEmpty()
         val expiresAt = prefs(context).getString(KEY_EXPIRES_AT, "").orEmpty()
-        val trafficLimitGb = trafficLimitGb(context)
-        val trafficUsedGb = trafficUsedGbText(context)
-        val trafficExceeded = prefs(context).getBoolean(KEY_TRAFFIC_EXCEEDED, false)
         val lastSyncAt = prefs(context).getLong(KEY_LAST_SYNC_AT, 0L)
         return buildString {
             append(if (hasToken(context)) "已登录" else "未登录")
             if (userLabel.isNotBlank()) append("\n用户：").append(userLabel)
             if (expiresAt.isNotBlank()) append("\n到期：").append(expiresAt)
-            if (hasToken(context)) {
-                append("\n流量：").append(trafficUsedGb).append(" GB")
-                if (trafficLimitGb > 0) append(" / ").append(formatGb(trafficLimitGb)).append(" GB") else append(" / 不限")
-                if (trafficExceeded) append("（已用完）")
-            }
             if (lastSyncAt > 0L) append("\n上次同步：").append(android.text.format.DateFormat.format("yyyy-MM-dd HH:mm", lastSyncAt))
         }
     }
 
     fun userLabel(context: Context): String =
         prefs(context).getString(KEY_USER_LABEL, "").orEmpty()
+
+    fun username(context: Context): String =
+        prefs(context).getString(KEY_USERNAME, "").orEmpty().ifBlank { userLabel(context) }
 
     fun expiresAt(context: Context): String =
         prefs(context).getString(KEY_EXPIRES_AT, "").orEmpty()

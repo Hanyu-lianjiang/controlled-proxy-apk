@@ -12,6 +12,8 @@
     <string name="pull_down_to_refresh">Please pull down to refresh!</string>
     <string name="controlled_title">Backend access</string>
     <string name="controlled_backend_url">Backend URL</string>
+    <string name="controlled_username">Username</string>
+    <string name="controlled_username_hint">Enter your username</string>
     <string name="controlled_license_code">License code</string>
     <string name="controlled_license_code_hint">Enter the license code</string>
     <string name="controlled_device_id">Device ID</string>
@@ -19,7 +21,7 @@
     <string name="controlled_login_and_sync">Log in and sync nodes</string>
     <string name="controlled_sync">Sync authorized nodes</string>
     <string name="controlled_logout">Log out and clear nodes</string>
-    <string name="controlled_fill_required">Please enter the license code</string>
+    <string name="controlled_fill_required">Please enter your username and license code</string>
     <string name="controlled_login_first">Please log in first</string>
     <string name="controlled_sync_success">Synced %d nodes</string>
     <string name="controlled_sync_failed">Sync failed</string>
@@ -42,12 +44,12 @@
     <string name="controlled_nodes_selected_format">Selected: %1$s</string>
     <string name="controlled_home_sync">Sync</string>
     <string name="controlled_home_account">Account</string>
-    <string name="controlled_home_usage">Traffic used</string>
+    <string name="controlled_home_usage">Authorized nodes</string>
     <string name="controlled_home_unlimited">Unlimited</string>
     <string name="controlled_home_authorized">Authorized</string>
-    <string name="controlled_home_quota_empty">Quota used</string>
+    <string name="controlled_home_quota_empty">Expired</string>
     <string name="controlled_home_more_nodes">+%d more lines</string>
-    <string name="controlled_home_access_denied">Access expired or traffic limit reached. Please contact support.</string>
+    <string name="controlled_home_access_denied">Access expired or disabled. Please contact support.</string>
     <string name="controlled_home_no_authorized_nodes">No authorized nodes available.</string>
     <string name="controlled_tab_proxy">Proxy</string>
     <string name="controlled_tab_nodes">Nodes</string>
@@ -57,10 +59,14 @@
     <string name="controlled_mine_check_update">Check for update</string>
     <string name="controlled_mine_status_format">Status: %1$s</string>
     <string name="controlled_mine_expire_format">Expires: %1$s</string>
-    <string name="controlled_mine_traffic_format">Traffic: %1$s</string>
-    <string name="controlled_mine_device_format">Device: %1$s</string>
+    <string name="controlled_mine_traffic_format">Nodes: %1$s</string>
+    <string name="controlled_mine_device_format">Username: %1$s</string>
     <string name="controlled_mine_last_sync_format">Last sync: %1$s</string>
     <string name="controlled_mine_never_sync">Never synced</string>
+    <plurals name="controlled_authorized_nodes_count">
+        <item quantity="one">%d node</item>
+        <item quantity="other">%d nodes</item>
+    </plurals>
 
     <!-- Notifications -->
     <string name="notification_action_stop_v2ray">Stop</string>
