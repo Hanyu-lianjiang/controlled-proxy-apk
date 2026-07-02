@@ -20,7 +20,7 @@
     <string name="controlled_not_logged_in">Not logged in</string>
     <string name="controlled_login_and_sync">Log in and sync nodes</string>
     <string name="controlled_enter">Enter</string>
-    <string name="controlled_login_subtitle">Enter your username and authorization code to continue</string>
+    <string name="controlled_login_subtitle">First use: enter a username and authorization code to register, then continue</string>
     <string name="controlled_login_credential_notice">Your username and authorization code are your login credentials. Keep them safe.</string>
     <string name="controlled_backend_hidden">Backend address hidden · Authorization verified automatically</string>
     <string name="controlled_sync">Sync authorized nodes</string>
