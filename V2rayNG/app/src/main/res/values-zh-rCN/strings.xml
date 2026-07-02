@@ -18,8 +18,8 @@
     <string name="controlled_device_id">设备 ID</string>
     <string name="controlled_not_logged_in">未登录</string>
     <string name="controlled_login_and_sync">登录并同步节点</string>
-    <string name="controlled_enter">进入</string>
-    <string name="controlled_login_subtitle">首次使用输入用户名和授权码即为注册成功，可直接进入</string>
+    <string name="controlled_enter">登录</string>
+    <string name="controlled_login_subtitle">首次登录即注册，授权码请联系管理员获取</string>
     <string name="controlled_login_credential_notice">用户名和授权码即为登录凭据，请妥善保管。</string>
     <string name="controlled_backend_hidden">后台地址已隐藏 · 自动校验授权</string>
     <string name="controlled_sync">同步授权节点</string>
@@ -68,7 +68,7 @@
     <string name="controlled_mine_check_update">检查更新</string>
     <string name="controlled_mine_current_node">当前节点</string>
     <string name="controlled_mine_client_version">客户端版本</string>
-    <string name="controlled_mine_online_update">在线更新</string>
+    <string name="controlled_mine_online_update">检测到新版本，立即更新</string>
     <string name="controlled_mine_expire_short">到期 %1$s</string>
     <string name="controlled_mine_last_sync">上次同步</string>
     <string name="controlled_mine_status_format">授权状态：%1$s</string>
