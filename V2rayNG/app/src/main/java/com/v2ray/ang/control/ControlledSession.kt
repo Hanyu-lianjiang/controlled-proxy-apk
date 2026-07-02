@@ -3,6 +3,9 @@ package com.v2ray.ang.control
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 import java.util.UUID
 
 object ControlledSession {
@@ -109,7 +112,7 @@ object ControlledSession {
 
     fun statusText(context: Context): String {
         val userLabel = prefs(context).getString(KEY_USER_LABEL, "").orEmpty()
-        val expiresAt = prefs(context).getString(KEY_EXPIRES_AT, "").orEmpty()
+        val expiresAt = expiresAtDisplay(context)
         val lastSyncAt = prefs(context).getLong(KEY_LAST_SYNC_AT, 0L)
         return buildString {
             append(if (hasToken(context)) "已登录" else "未登录")
@@ -127,6 +130,12 @@ object ControlledSession {
 
     fun expiresAt(context: Context): String =
         prefs(context).getString(KEY_EXPIRES_AT, "").orEmpty()
+
+    fun expiresAtDisplay(context: Context): String {
+        val raw = expiresAt(context)
+        if (raw.isBlank()) return ""
+        return formatDateTime(raw)
+    }
 
     fun trafficLimitMb(context: Context): Long =
         prefs(context).getLong(KEY_TRAFFIC_LIMIT_MB, 0L)
@@ -191,5 +200,31 @@ object ControlledSession {
     fun clear(context: Context) {
         val deviceId = getDeviceId(context)
         prefs(context).edit().clear().putString(KEY_DEVICE_ID, deviceId).apply()
+    }
+
+    private fun formatDateTime(value: String): String {
+        val trimmed = value.trim()
+        val parsed = parseDateTime(trimmed) ?: return trimmed
+        return SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(parsed)
+    }
+
+    private fun parseDateTime(value: String): java.util.Date? {
+        val patterns = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            "yyyy-MM-dd'T'HH:mm:ssX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+        )
+        patterns.forEach { pattern ->
+            val formatter = SimpleDateFormat(pattern, Locale.US).apply {
+                if (pattern.endsWith("'Z'")) {
+                    timeZone = TimeZone.getTimeZone("UTC")
+                }
+            }
+            runCatching { formatter.parse(value) }.getOrNull()?.let { return it }
+        }
+        return null
     }
 }

@@ -847,7 +847,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         )
         binding.tvMineExpire.text = getString(
             R.string.controlled_mine_expire_format,
-            ControlledSession.expiresAt(this).ifBlank { getString(R.string.controlled_home_unlimited) }
+            ControlledSession.expiresAtDisplay(this).ifBlank { getString(R.string.controlled_home_unlimited) }
         )
         binding.tvMineTraffic.text = trafficUsageText()
         binding.tvMineDevice.text = getString(

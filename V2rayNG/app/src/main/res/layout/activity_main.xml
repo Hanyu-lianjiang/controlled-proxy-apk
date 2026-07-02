@@ -244,6 +244,7 @@
                                 app:indicatorColor="@color/controlled_connect"
                                 app:trackColor="@color/controlled_progress_track"
                                 app:trackCornerRadius="4dp"
+                                app:trackStopIndicatorSize="0dp"
                                 app:trackThickness="7dp" />
                         </LinearLayout>
                     </LinearLayout>
