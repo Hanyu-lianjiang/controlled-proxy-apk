@@ -22,7 +22,7 @@ class ControlledActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentViewWithToolbar(binding.root, showHomeAsUp = true, title = getString(R.string.controlled_title))
+        setContentView(binding.root)
 
         binding.etBackendUrl.setText(ControlledSession.getBaseUrl(this))
         binding.etUsername.setText(ControlledSession.username(this))
@@ -124,6 +124,6 @@ class ControlledActivity : BaseActivity() {
     }
 
     private fun refreshStatus() {
-        binding.tvStatus.text = ControlledSession.statusText(this)
+        binding.tvStatus.text = getString(R.string.controlled_backend_hidden)
     }
 }

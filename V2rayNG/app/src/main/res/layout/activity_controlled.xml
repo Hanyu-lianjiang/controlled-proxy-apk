@@ -1,62 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_controlled_home"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true">
+
+    <View
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="78dp"
+        android:layout_marginEnd="-82dp"
+        android:alpha="0.42"
+        android:background="@drawable/bg_controlled_connect_halo_active" />
+
+    <View
+        android:layout_width="190dp"
+        android:layout_height="190dp"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="-88dp"
+        android:layout_marginTop="18dp"
+        android:alpha="0.26"
+        android:background="@drawable/bg_controlled_connect_halo" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingStart="20dp"
-        android:paddingTop="26dp"
-        android:paddingEnd="20dp"
+        android:paddingStart="24dp"
+        android:paddingTop="56dp"
+        android:paddingEnd="24dp"
         android:paddingBottom="24dp">
 
         <TextView
-            android:layout_width="76dp"
-            android:layout_height="76dp"
-            android:background="@drawable/bg_controlled_ios_avatar"
-            android:elevation="8dp"
-            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:text="H"
-            android:textColor="@color/colorWhite"
-            android:textSize="34sp"
+            android:text="@string/controlled_home_title"
+            android:textColor="@color/controlled_ink"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:gravity="center"
+            android:layout_marginTop="12dp"
             android:includeFontPadding="false"
-            android:text="@string/controlled_home_title"
-            android:textColor="@color/controlled_ink"
-            android:textSize="30sp"
+            android:text="@string/controlled_login_subtitle"
+            android:textColor="@color/controlled_text_muted"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:gravity="center"
             android:includeFontPadding="false"
-            android:text="@string/controlled_login_and_sync"
+            android:text="@string/controlled_login_credential_notice"
             android:textColor="@color/controlled_text_muted"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="32dp"
             android:background="@drawable/bg_controlled_ios_card"
-            android:elevation="6dp"
+            android:elevation="8dp"
             android:orientation="vertical"
-            android:padding="18dp">
+            android:paddingStart="20dp"
+            android:paddingTop="22dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="18dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -79,25 +94,26 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="@string/controlled_username"
-                android:textColor="@color/controlled_ink"
-                android:textSize="14sp"
+                android:textColor="@color/controlled_text_muted"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_username"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="54dp"
                 android:layout_marginTop="9dp"
                 android:background="@drawable/bg_controlled_ios_input"
                 android:hint="@string/controlled_username_hint"
                 android:includeFontPadding="false"
                 android:inputType="textPersonName"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
                 android:singleLine="true"
                 android:textColor="@color/controlled_ink"
                 android:textColorHint="@color/controlled_text_muted"
-                android:textSize="15sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -105,25 +121,26 @@
                 android:layout_marginTop="18dp"
                 android:includeFontPadding="false"
                 android:text="@string/controlled_license_code"
-                android:textColor="@color/controlled_ink"
-                android:textSize="14sp"
+                android:textColor="@color/controlled_text_muted"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/et_license_code"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="54dp"
                 android:layout_marginTop="9dp"
                 android:background="@drawable/bg_controlled_ios_input"
                 android:hint="@string/controlled_license_code_hint"
                 android:includeFontPadding="false"
                 android:inputType="textPassword"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
                 android:singleLine="true"
                 android:textColor="@color/controlled_ink"
                 android:textColorHint="@color/controlled_text_muted"
-                android:textSize="15sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -143,62 +160,46 @@
             <TextView
                 android:id="@+id/tv_status"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/bg_controlled_ios_soft_blue"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
                 android:includeFontPadding="false"
-                android:maxLines="1"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/controlled_not_logged_in"
-                android:textColor="@color/controlled_connect"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="@string/controlled_backend_hidden"
+                android:textColor="@color/controlled_text_muted"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="20dp"
+                android:elevation="4dp"
+                android:minHeight="56dp"
+                android:text="@string/controlled_enter"
+                android:textColor="@color/colorWhite"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/controlled_connect"
+                app:cornerRadius="20dp" />
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_login"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="24dp"
-            android:elevation="6dp"
-            android:minHeight="54dp"
-            android:text="@string/controlled_login_and_sync"
-            android:textColor="@color/colorWhite"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="@color/controlled_connect"
-            app:cornerRadius="22dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sync"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="12dp"
-            android:minHeight="52dp"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
             android:text="@string/controlled_sync"
-            android:textColor="@color/controlled_ink"
-            android:textSize="15sp"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ic_cloud_download_24dp"
-            app:iconPadding="8dp"
-            app:iconTint="@color/controlled_connect"
-            app:strokeColor="@color/controlled_outline_soft" />
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:minHeight="52dp"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
             android:text="@string/controlled_logout"
-            android:textColor="@color/controlled_danger"
-            android:textSize="15sp"
-            app:cornerRadius="20dp"
-            app:strokeColor="@color/controlled_outline_soft" />
+            android:visibility="gone" />
     </LinearLayout>
-</ScrollView>
+</FrameLayout>

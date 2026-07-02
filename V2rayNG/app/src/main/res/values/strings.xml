@@ -19,6 +19,10 @@
     <string name="controlled_device_id">Device ID</string>
     <string name="controlled_not_logged_in">Not logged in</string>
     <string name="controlled_login_and_sync">Log in and sync nodes</string>
+    <string name="controlled_enter">Enter</string>
+    <string name="controlled_login_subtitle">Enter your username and authorization code to continue</string>
+    <string name="controlled_login_credential_notice">Your username and authorization code are your login credentials. Keep them safe.</string>
+    <string name="controlled_backend_hidden">Backend address hidden · Authorization verified automatically</string>
     <string name="controlled_sync">Sync authorized nodes</string>
     <string name="controlled_logout">Log out and clear nodes</string>
     <string name="controlled_fill_required">Please enter your username and license code</string>
@@ -63,6 +67,11 @@
     <string name="controlled_mine_title">Me</string>
     <string name="controlled_mine_manage">Manage authorization</string>
     <string name="controlled_mine_check_update">Check for update</string>
+    <string name="controlled_mine_current_node">Current node</string>
+    <string name="controlled_mine_client_version">Client version</string>
+    <string name="controlled_mine_online_update">Update online</string>
+    <string name="controlled_mine_expire_short">Expires %1$s</string>
+    <string name="controlled_mine_last_sync">Last sync</string>
     <string name="controlled_mine_status_format">Status: %1$s</string>
     <string name="controlled_mine_expire_format">Expires: %1$s</string>
     <string name="controlled_mine_traffic_format">Remaining traffic: %1$s</string>

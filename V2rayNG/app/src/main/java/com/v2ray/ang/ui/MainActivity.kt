@@ -66,6 +66,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.util.Locale
 import kotlin.system.measureTimeMillis
 
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -91,6 +92,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private var dashboardRefreshJob: Job? = null
     private var tcpTestJob: Job? = null
     private val tcpTestResults = mutableMapOf<String, TcpTestState>()
+    private val tcpResultViews = mutableMapOf<String, TextView>()
     private var lastRemoteTrafficRefreshAt = 0L
     private var lastNodeRenderSignature = ""
     private var activeDashboardTab = DashboardTab.PROXY
@@ -425,6 +427,8 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.tvTrafficUsage.text = trafficUsageText()
         binding.progressTraffic.max = 1000
         binding.progressTraffic.progress = trafficProgress()
+        binding.progressMineTraffic.max = 1000
+        binding.progressMineTraffic.progress = binding.progressTraffic.progress
     }
 
     private fun trafficUsageText(): String {
@@ -534,9 +538,13 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private fun renderNodePage(serverIds: List<String>, nodes: List<ControlledNode>, selectedGuid: String?) {
         val signature = buildNodeRenderSignature(serverIds, nodes, selectedGuid)
         binding.tvNodePageSelected.text = selectedNodeLabel(serverIds, nodes, selectedGuid)
-        if (signature == lastNodeRenderSignature) return
+        if (signature == lastNodeRenderSignature) {
+            updateTcpResultViews()
+            return
+        }
         lastNodeRenderSignature = signature
         binding.llNodeList.removeAllViews()
+        tcpResultViews.clear()
         if (serverIds.isEmpty()) {
             binding.llNodeList.addView(simpleNodeText(getString(R.string.controlled_home_no_line), muted = true))
             return
@@ -608,6 +616,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             row.addView(flag)
             row.addView(textColumn)
             row.addView(tcpState)
+            tcpResultViews[guid] = tcpState
             binding.llNodeList.addView(row)
             if (activeDashboardTab == DashboardTab.NODES) {
                 row.alpha = 0f
@@ -638,8 +647,14 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 .append(node?.name.orEmpty())
                 .append(':')
                 .append(node?.flagEmoji.orEmpty())
-                .append(':')
-                .append(tcpTestResults[guid]?.toString().orEmpty())
+        }
+    }
+
+    private fun updateTcpResultViews() {
+        tcpResultViews.forEach { (guid, view) ->
+            view.text = tcpTestText(guid)
+            view.isVisible = view.text.isNotBlank()
+            view.setTextColor(ContextCompat.getColor(this, tcpTestTextColor(guid)))
         }
     }
 
@@ -712,20 +727,28 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         nodes: List<com.v2ray.ang.control.ControlledNode>,
         selectedGuid: String?,
     ): String {
-        val selectedIndex = serverIds.indexOf(selectedGuid)
-        val selectedNode = nodes.getOrNull(selectedIndex)
-        val selectedProfileName = selectedGuid?.let { MmkvManager.decodeServerConfig(it)?.remarks }?.takeIf { it.isNotBlank() }
-        val selectedLabel = selectedNode
-            ?.let { node ->
-                val name = nodeDisplayName(node, selectedProfileName, selectedIndex)
-                node.flagEmoji?.takeIf { it.isNotBlank() }?.let { flag -> "$flag $name" } ?: name
-            }
-            ?: selectedProfileName
+        val selectedLabel = selectedNodeDisplayName(serverIds, nodes, selectedGuid)
         return when {
             selectedLabel != null && serverIds.isNotEmpty() -> getString(R.string.controlled_nodes_selected_format, selectedLabel)
             serverIds.isNotEmpty() -> getString(R.string.controlled_nodes_selected_format, getString(R.string.controlled_home_current))
             else -> getString(R.string.controlled_home_no_line)
         }
+    }
+
+    private fun selectedNodeDisplayName(
+        serverIds: List<String>,
+        nodes: List<com.v2ray.ang.control.ControlledNode>,
+        selectedGuid: String?,
+    ): String? {
+        val selectedIndex = serverIds.indexOf(selectedGuid)
+        val selectedNode = nodes.getOrNull(selectedIndex)
+        val selectedProfileName = selectedGuid?.let { MmkvManager.decodeServerConfig(it)?.remarks }?.takeIf { it.isNotBlank() }
+        return selectedNode
+            ?.let { node ->
+                val name = nodeDisplayName(node, selectedProfileName, selectedIndex)
+                node.flagEmoji?.takeIf { it.isNotBlank() }?.let { flag -> "$flag $name" } ?: name
+            }
+            ?: selectedProfileName
     }
 
     private fun nodeDisplayName(node: ControlledNode?, fallback: String?, index: Int): String =
@@ -836,29 +859,39 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         val label = ControlledSession.userLabel(this).ifBlank {
             if (loggedIn) getString(R.string.controlled_home_account) else getString(R.string.controlled_not_logged_in)
         }
+        val username = ControlledSession.username(this).ifBlank { label }
+        val serverIds = MmkvManager.decodeServerList(ControlledNodeSync.CONTROLLED_SUBSCRIPTION_ID)
+        val nodes = ControlledSession.getNodes(this)
+        val selectedGuid = MmkvManager.getSelectServer()
+        val expiresAt = ControlledSession.expiresAtDisplay(this).ifBlank { getString(R.string.controlled_home_unlimited) }
         binding.tvMineUser.text = label
-        binding.tvMineStatus.text = getString(
-            R.string.controlled_mine_status_format,
-            if (loggedIn) {
-                getString(R.string.controlled_home_authorized)
-            } else {
-                getString(R.string.controlled_not_logged_in)
-            }
+        binding.tvMineAvatar.text = avatarInitial(username)
+        binding.tvMineStatus.text = if (loggedIn) {
+            getString(R.string.controlled_home_authorized)
+        } else {
+            getString(R.string.controlled_not_logged_in)
+        }
+        binding.tvMineStatus.setTextColor(
+            ContextCompat.getColor(
+                this,
+                if (loggedIn) R.color.controlled_connected_start else R.color.controlled_text_muted
+            )
         )
-        binding.tvMineExpire.text = getString(
-            R.string.controlled_mine_expire_format,
-            ControlledSession.expiresAtDisplay(this).ifBlank { getString(R.string.controlled_home_unlimited) }
-        )
+        binding.tvMineExpire.text = getString(R.string.controlled_mine_expire_short, expiresAt)
         binding.tvMineTraffic.text = trafficUsageText()
-        binding.tvMineDevice.text = getString(
-            R.string.controlled_mine_device_format,
-            ControlledSession.username(this).ifBlank { ControlledSession.userLabel(this) }
-        )
+        binding.tvMineDevice.text = selectedNodeDisplayName(serverIds, nodes, selectedGuid)
+            ?: getString(R.string.controlled_home_no_line)
         val lastSync = ControlledSession.lastSyncAt(this)
-        binding.tvMineLastSync.text = getString(
-            R.string.controlled_mine_last_sync_format,
+        binding.tvMineLastSync.text =
             if (lastSync > 0L) android.text.format.DateFormat.format("yyyy-MM-dd HH:mm", lastSync).toString() else getString(R.string.controlled_mine_never_sync)
-        )
+        binding.tvMineVersion.text = BuildConfig.VERSION_NAME
+    }
+
+    private fun avatarInitial(value: String): String {
+        val text = value.trim()
+        if (text.isBlank()) return "I"
+        val firstCodePoint = text.codePointAt(0)
+        return String(Character.toChars(firstCodePoint)).uppercase(Locale.getDefault())
     }
 
     private fun looksLikeHost(value: String): Boolean {
