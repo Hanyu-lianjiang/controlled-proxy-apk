@@ -29,8 +29,8 @@
     <string name="controlled_home_title">内部专用</string>
     <string name="controlled_home_disconnected">未连接</string>
     <string name="controlled_home_checking">正在校验授权…</string>
-    <string name="controlled_home_tap_to_start">点击下方按钮即可连接。</string>
-    <string name="controlled_home_running">当前网络已受保护。</string>
+    <string name="controlled_home_tap_to_start">准备就绪</string>
+    <string name="controlled_home_running">网络已受保护</string>
     <string name="controlled_home_connect">一键连接</string>
     <string name="controlled_home_disconnect">断开连接</string>
     <string name="controlled_home_line">授权线路</string>
@@ -41,12 +41,12 @@
     <string name="controlled_nodes_title">选择线路</string>
     <string name="controlled_nodes_all">全部节点</string>
     <string name="controlled_nodes_selected_format">当前：%1$s</string>
-    <string name="controlled_nodes_test_tcp">测试 TCP</string>
+    <string name="controlled_nodes_test_tcp">连通性测试</string>
     <string name="controlled_nodes_test_testing">测试中</string>
     <string name="controlled_nodes_test_success">%1$dms</string>
     <string name="controlled_nodes_test_failed">失败</string>
     <string name="controlled_nodes_test_no_nodes">暂无可测试节点</string>
-    <string name="controlled_nodes_test_done">TCP 测试完成</string>
+    <string name="controlled_nodes_test_done">连通性测试完成</string>
     <string name="controlled_home_sync">同步线路</string>
     <string name="controlled_home_account">账号授权</string>
     <string name="controlled_home_usage">剩余流量</string>
@@ -59,7 +59,7 @@
     <string name="controlled_tab_proxy">代理</string>
     <string name="controlled_tab_nodes">节点</string>
     <string name="controlled_tab_mine">我的</string>
-    <string name="controlled_mine_title">我的授权</string>
+    <string name="controlled_mine_title">我的</string>
     <string name="controlled_mine_manage">管理授权</string>
     <string name="controlled_mine_check_update">检查更新</string>
     <string name="controlled_mine_status_format">授权状态：%1$s</string>

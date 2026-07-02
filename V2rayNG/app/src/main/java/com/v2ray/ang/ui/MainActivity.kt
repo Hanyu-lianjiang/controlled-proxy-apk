@@ -1,5 +1,6 @@
 package com.v2ray.ang.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Typeface
@@ -10,6 +11,8 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -89,6 +92,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private var tcpTestJob: Job? = null
     private val tcpTestResults = mutableMapOf<String, TcpTestState>()
     private var lastRemoteTrafficRefreshAt = 0L
+    private var lastNodeRenderSignature = ""
     private var activeDashboardTab = DashboardTab.PROXY
 
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -136,6 +140,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.navMine.setOnClickListener { showDashboardTab(DashboardTab.MINE) }
         binding.viewConnectHalo.startAnimation(AnimationUtils.loadAnimation(this, R.anim.controlled_connect_pulse))
         binding.layoutTest.setOnClickListener { handleLayoutTestClick() }
+        setupMotionFeedback()
 
         setupGroupTab()
         setupViewModel()
@@ -369,7 +374,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         }
 
         if (isRunning) {
-            binding.panelConnectionStatus.setBackgroundResource(R.drawable.bg_controlled_status_connected)
+            binding.panelConnectionStatus.setBackgroundResource(R.drawable.bg_controlled_ios_card)
             binding.viewConnectHalo.setBackgroundResource(R.drawable.bg_controlled_connect_halo_active)
             binding.fab.setImageResource(R.drawable.ic_stop_24dp)
             binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_active))
@@ -382,7 +387,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             binding.tvConnectionState.text = getString(R.string.controlled_home_connected)
             binding.tvConnectionSubtitle.text = getString(R.string.controlled_home_running)
         } else {
-            binding.panelConnectionStatus.setBackgroundResource(R.drawable.bg_controlled_status_disconnected)
+            binding.panelConnectionStatus.setBackgroundResource(R.drawable.bg_controlled_ios_card)
             binding.viewConnectHalo.setBackgroundResource(R.drawable.bg_controlled_connect_halo)
             binding.fab.setImageResource(R.drawable.ic_play_24dp)
             binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.color_fab_inactive))
@@ -413,8 +418,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     private fun accountBadgeText(): String {
         if (!ControlledSession.hasToken(this)) return getString(R.string.controlled_not_logged_in)
-        val label = ControlledSession.userLabel(this).ifBlank { getString(R.string.controlled_home_account) }
-        return "$label\n${getString(R.string.controlled_home_authorized)}"
+        return getString(R.string.controlled_home_authorized)
     }
 
     private fun refreshTrafficUsage() {
@@ -495,6 +499,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun showDashboardTab(tab: DashboardTab) {
+        val previousTab = activeDashboardTab
         activeDashboardTab = tab
         binding.pageProxy.isVisible = tab == DashboardTab.PROXY
         binding.pageNodes.isVisible = tab == DashboardTab.NODES
@@ -504,17 +509,34 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         styleBottomNav(binding.navNodes, tab == DashboardTab.NODES)
         styleBottomNav(binding.navMine, tab == DashboardTab.MINE)
         refreshSimpleDashboard()
+        if (previousTab != tab) {
+            animatePageIn(
+                when (tab) {
+                    DashboardTab.PROXY -> binding.pageProxy
+                    DashboardTab.NODES -> binding.pageNodes
+                    DashboardTab.MINE -> binding.pageMine
+                }
+            )
+        }
     }
 
     private fun styleBottomNav(item: TextView, selected: Boolean) {
         item.setTextColor(ContextCompat.getColor(this, if (selected) R.color.controlled_connect else R.color.controlled_text_muted))
         item.setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
         item.setBackgroundResource(if (selected) R.drawable.bg_controlled_nav_selected else R.drawable.bg_controlled_node_unselected)
+        item.animate()
+            .scaleX(if (selected) 1.02f else 1f)
+            .scaleY(if (selected) 1.02f else 1f)
+            .setDuration(140L)
+            .start()
     }
 
     private fun renderNodePage(serverIds: List<String>, nodes: List<ControlledNode>, selectedGuid: String?) {
-        binding.llNodeList.removeAllViews()
+        val signature = buildNodeRenderSignature(serverIds, nodes, selectedGuid)
         binding.tvNodePageSelected.text = selectedNodeLabel(serverIds, nodes, selectedGuid)
+        if (signature == lastNodeRenderSignature) return
+        lastNodeRenderSignature = signature
+        binding.llNodeList.removeAllViews()
         if (serverIds.isEmpty()) {
             binding.llNodeList.addView(simpleNodeText(getString(R.string.controlled_home_no_line), muted = true))
             return
@@ -527,29 +549,33 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(dp(16), dp(14), dp(16), dp(14))
+                minimumHeight = dp(72)
+                setPadding(dp(16), dp(13), dp(16), dp(13))
                 background = ContextCompat.getDrawable(
                     this@MainActivity,
                     if (selected) R.drawable.bg_controlled_node_selected else R.drawable.bg_controlled_surface_panel
                 )
+                elevation = if (selected) dp(4).toFloat() else dp(2).toFloat()
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    bottomMargin = dp(10)
+                    bottomMargin = dp(12)
                 }
                 isClickable = true
                 isFocusable = true
                 setOnClickListener {
+                    animateTap(this)
                     selectControlledNode(guid)
                 }
             }
 
             val flag = TextView(this).apply {
                 text = node?.flagEmoji?.takeIf { it.isNotBlank() } ?: "🌐"
-                textSize = 28f
+                textSize = 29f
                 gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(dp(54), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                includeFontPadding = false
+                layoutParams = LinearLayout.LayoutParams(dp(46), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                     rightMargin = dp(8)
                 }
             }
@@ -559,18 +585,21 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             }
             val title = TextView(this).apply {
                 text = nodeDisplayName(node, profile?.remarks, index)
-                textSize = 16f
+                textSize = 17f
+                typeface = Typeface.DEFAULT_BOLD
                 maxLines = 1
                 ellipsize = android.text.TextUtils.TruncateAt.END
+                includeFontPadding = false
                 setTextColor(ContextCompat.getColor(this@MainActivity, R.color.controlled_ink))
             }
             val tcpState = TextView(this).apply {
                 text = tcpTestText(guid)
-                textSize = 13f
+                textSize = 12f
                 gravity = Gravity.CENTER
                 isVisible = text.isNotBlank()
+                includeFontPadding = false
                 setTextColor(ContextCompat.getColor(this@MainActivity, tcpTestTextColor(guid)))
-                layoutParams = LinearLayout.LayoutParams(dp(72), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                layoutParams = LinearLayout.LayoutParams(dp(64), LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                     leftMargin = dp(8)
                 }
             }
@@ -580,6 +609,37 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             row.addView(textColumn)
             row.addView(tcpState)
             binding.llNodeList.addView(row)
+            if (activeDashboardTab == DashboardTab.NODES) {
+                row.alpha = 0f
+                row.translationY = dp(10).toFloat()
+                row.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setStartDelay((index * 24L).coerceAtMost(120L))
+                    .setDuration(180L)
+                    .start()
+            }
+        }
+    }
+
+    private fun buildNodeRenderSignature(
+        serverIds: List<String>,
+        nodes: List<ControlledNode>,
+        selectedGuid: String?,
+    ): String = buildString {
+        append(selectedGuid.orEmpty())
+        serverIds.forEachIndexed { index, guid ->
+            val node = nodes.getOrNull(index)
+            append('|')
+                .append(guid)
+                .append(':')
+                .append(node?.id.orEmpty())
+                .append(':')
+                .append(node?.name.orEmpty())
+                .append(':')
+                .append(node?.flagEmoji.orEmpty())
+                .append(':')
+                .append(tcpTestResults[guid]?.toString().orEmpty())
         }
     }
 
@@ -789,10 +849,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             R.string.controlled_mine_expire_format,
             ControlledSession.expiresAt(this).ifBlank { getString(R.string.controlled_home_unlimited) }
         )
-        binding.tvMineTraffic.text = getString(
-            R.string.controlled_mine_traffic_format,
-            trafficUsageText()
-        )
+        binding.tvMineTraffic.text = trafficUsageText()
         binding.tvMineDevice.text = getString(
             R.string.controlled_mine_device_format,
             ControlledSession.username(this).ifBlank { ControlledSession.userLabel(this) }
@@ -822,6 +879,65 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 )
             )
         }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupMotionFeedback() {
+        listOf<View>(
+            binding.btnPrimaryConnect,
+            binding.btnQuickSync,
+            binding.btnTestTcp,
+            binding.btnQuickAccount,
+            binding.btnCheckUpdate,
+            binding.navProxy,
+            binding.navNodes,
+            binding.navMine,
+        ).forEach { view ->
+            view.setOnTouchListener { touched, event ->
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> touched.animate()
+                        .scaleX(0.97f)
+                        .scaleY(0.97f)
+                        .setDuration(90L)
+                        .start()
+
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL -> touched.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(140L)
+                        .start()
+                }
+                false
+            }
+        }
+    }
+
+    private fun animatePageIn(view: View) {
+        view.animate().cancel()
+        view.alpha = 0f
+        view.translationY = dp(12).toFloat()
+        view.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(190L)
+            .start()
+    }
+
+    private fun animateTap(view: View) {
+        view.animate().cancel()
+        view.animate()
+            .scaleX(0.985f)
+            .scaleY(0.985f)
+            .setDuration(60L)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(120L)
+                    .start()
+            }
+            .start()
+    }
 
     private fun selectControlledNode(guid: String) {
         if (guid == MmkvManager.getSelectServer()) return

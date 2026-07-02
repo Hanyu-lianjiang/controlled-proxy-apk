@@ -30,8 +30,8 @@
     <string name="controlled_home_title">Internal</string>
     <string name="controlled_home_disconnected">Not connected</string>
     <string name="controlled_home_checking">Checking access…</string>
-    <string name="controlled_home_tap_to_start">Tap the button below to connect.</string>
-    <string name="controlled_home_running">Protected traffic is running.</string>
+    <string name="controlled_home_tap_to_start">Ready</string>
+    <string name="controlled_home_running">Network protected</string>
     <string name="controlled_home_connect">Connect</string>
     <string name="controlled_home_disconnect">Disconnect</string>
     <string name="controlled_home_line">Authorized line</string>
@@ -42,12 +42,12 @@
     <string name="controlled_nodes_title">Select line</string>
     <string name="controlled_nodes_all">All nodes</string>
     <string name="controlled_nodes_selected_format">Selected: %1$s</string>
-    <string name="controlled_nodes_test_tcp">Test TCP</string>
+    <string name="controlled_nodes_test_tcp">Connectivity test</string>
     <string name="controlled_nodes_test_testing">Testing</string>
     <string name="controlled_nodes_test_success">%1$dms</string>
     <string name="controlled_nodes_test_failed">Failed</string>
     <string name="controlled_nodes_test_no_nodes">No nodes to test</string>
-    <string name="controlled_nodes_test_done">TCP test finished</string>
+    <string name="controlled_nodes_test_done">Connectivity test finished</string>
     <string name="controlled_home_sync">Sync</string>
     <string name="controlled_home_account">Account</string>
     <string name="controlled_home_usage">Remaining traffic</string>
@@ -60,7 +60,7 @@
     <string name="controlled_tab_proxy">Proxy</string>
     <string name="controlled_tab_nodes">Nodes</string>
     <string name="controlled_tab_mine">Mine</string>
-    <string name="controlled_mine_title">My account</string>
+    <string name="controlled_mine_title">Me</string>
     <string name="controlled_mine_manage">Manage authorization</string>
     <string name="controlled_mine_check_update">Check for update</string>
     <string name="controlled_mine_status_format">Status: %1$s</string>

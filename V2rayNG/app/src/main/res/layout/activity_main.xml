@@ -13,7 +13,8 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:visibility="gone">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -28,7 +29,7 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="invisible"
-            app:indicatorColor="@color/color_fab_active" />
+            app:indicatorColor="@color/controlled_connect" />
 
         <FrameLayout
             android:id="@+id/simple_dashboard"
@@ -40,7 +41,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="12dp">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -52,21 +56,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:paddingStart="18dp"
-                        android:paddingTop="14dp"
-                        android:paddingEnd="18dp"
-                        android:paddingBottom="14dp">
+                        android:paddingTop="18dp">
 
                         <LinearLayout
-                            android:id="@+id/panel_connection_status"
                             android:layout_width="match_parent"
-                            android:layout_height="112dp"
-                            android:background="@drawable/bg_controlled_status_disconnected"
-                            android:elevation="4dp"
+                            android:layout_height="56dp"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
+                            android:orientation="horizontal">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -75,128 +71,180 @@
                                 android:orientation="vertical">
 
                                 <TextView
-                                    android:id="@+id/tv_connection_state"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:includeFontPadding="false"
-                                    android:text="@string/controlled_home_disconnected"
-                                    android:textColor="@color/colorWhite"
-                                    android:textSize="26sp"
+                                    android:text="@string/controlled_home_title"
+                                    android:textColor="@color/controlled_ink"
+                                    android:textSize="28sp"
                                     android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/tv_connection_subtitle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
+                                    android:layout_marginTop="5dp"
+                                    android:ellipsize="end"
+                                    android:includeFontPadding="false"
                                     android:maxLines="1"
                                     android:text="@string/controlled_home_tap_to_start"
-                                    android:textColor="@color/controlled_text_on_dark_soft"
-                                    android:textSize="14sp" />
+                                    android:textColor="@color/controlled_text_muted"
+                                    android:textSize="13sp" />
                             </LinearLayout>
 
                             <TextView
                                 android:id="@+id/tv_account_state"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_controlled_status_badge"
-                                android:maxLines="2"
+                                android:layout_height="36dp"
+                                android:background="@drawable/bg_controlled_nav_selected"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:minWidth="74dp"
+                                android:paddingStart="14dp"
+                                android:paddingEnd="14dp"
                                 android:text="@string/controlled_not_logged_in"
-                                android:textAlignment="center"
-                                android:textColor="@color/colorWhite"
+                                android:textColor="@color/controlled_connect"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/panel_connection_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="68dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_controlled_ios_card"
+                            android:elevation="4dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="18dp"
+                            android:paddingEnd="18dp">
+
+                            <View
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:background="@drawable/bg_controlled_connect_halo" />
+
+                            <TextView
+                                android:id="@+id/tv_connection_state"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:layout_weight="1"
+                                android:includeFontPadding="false"
+                                android:text="@string/controlled_home_disconnected"
+                                android:textColor="@color/controlled_ink"
+                                android:textSize="19sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="@string/controlled_home_current"
+                                android:textColor="@color/controlled_text_muted"
+                                android:textSize="13sp" />
                         </LinearLayout>
 
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_weight="1">
+                            android:layout_weight="1"
+                            android:minHeight="190dp">
 
                             <View
                                 android:id="@+id/view_connect_halo"
-                                android:layout_width="176dp"
-                                android:layout_height="176dp"
+                                android:layout_width="204dp"
+                                android:layout_height="204dp"
                                 android:layout_gravity="center"
-                                android:alpha="0.72"
+                                android:alpha="0.78"
                                 android:background="@drawable/bg_controlled_connect_halo" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_primary_connect"
-                                android:layout_width="146dp"
-                                android:layout_height="146dp"
+                                android:layout_width="154dp"
+                                android:layout_height="154dp"
                                 android:layout_gravity="center"
-                                android:elevation="8dp"
+                                android:elevation="10dp"
                                 android:gravity="center"
                                 android:insetLeft="0dp"
                                 android:insetTop="0dp"
                                 android:insetRight="0dp"
                                 android:insetBottom="0dp"
+                                android:minWidth="154dp"
+                                android:minHeight="154dp"
                                 android:text=""
                                 android:textColor="@color/colorWhite"
                                 app:backgroundTint="@color/controlled_connect"
-                                app:cornerRadius="73dp"
+                                app:cornerRadius="77dp"
                                 app:icon="@drawable/ic_play_24dp"
                                 app:iconGravity="textStart"
                                 app:iconPadding="0dp"
-                                app:iconSize="64dp"
+                                app:iconSize="66dp"
                                 app:iconTint="@color/colorWhite" />
                         </FrameLayout>
 
                         <TextView
                             android:id="@+id/tv_proxy_current_node"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginBottom="10dp"
+                            android:layout_height="48dp"
+                            android:layout_marginBottom="12dp"
                             android:background="@drawable/bg_controlled_node_selected"
                             android:ellipsize="end"
                             android:gravity="center"
+                            android:includeFontPadding="false"
                             android:maxLines="1"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
+                            android:paddingStart="18dp"
+                            android:paddingEnd="18dp"
                             android:text="@string/controlled_home_no_line"
                             android:textColor="@color/controlled_ink"
-                            android:textSize="15sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
                             android:id="@+id/panel_usage"
                             android:layout_width="match_parent"
-                            android:layout_height="82dp"
+                            android:layout_height="108dp"
+                            android:layout_marginBottom="10dp"
                             android:background="@drawable/bg_controlled_usage_panel"
+                            android:elevation="4dp"
                             android:gravity="center_vertical"
                             android:orientation="vertical"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp">
+                            android:paddingStart="20dp"
+                            android:paddingTop="16dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="18dp">
 
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
                                 android:text="@string/controlled_home_usage"
                                 android:textColor="@color/controlled_text_muted"
-                                android:textSize="12sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tv_traffic_usage"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="5dp"
+                                android:includeFontPadding="false"
                                 android:text="0 GB / --"
                                 android:textColor="@color/controlled_ink"
-                                android:textSize="18sp"
+                                android:textSize="28sp"
                                 android:textStyle="bold" />
 
                             <com.google.android.material.progressindicator.LinearProgressIndicator
                                 android:id="@+id/progress_traffic"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="10dp"
                                 android:progress="0"
                                 app:indicatorColor="@color/controlled_connect"
                                 app:trackColor="@color/controlled_progress_track"
-                                app:trackCornerRadius="3dp"
-                                app:trackThickness="6dp" />
+                                app:trackCornerRadius="4dp"
+                                app:trackThickness="7dp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -205,10 +253,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:paddingStart="18dp"
-                        android:paddingTop="14dp"
-                        android:paddingEnd="18dp"
-                        android:paddingBottom="14dp"
+                        android:paddingTop="18dp"
                         android:visibility="gone">
 
                         <LinearLayout
@@ -227,66 +272,76 @@
                                     android:id="@+id/tv_node_page_title"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/controlled_nodes_all"
+                                    android:includeFontPadding="false"
+                                    android:text="@string/controlled_nodes_title"
                                     android:textColor="@color/controlled_ink"
-                                    android:textSize="24sp"
+                                    android:textSize="28sp"
                                     android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/tv_node_page_selected"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
+                                    android:layout_marginTop="6dp"
                                     android:ellipsize="end"
+                                    android:includeFontPadding="false"
                                     android:maxLines="1"
                                     android:text="@string/controlled_home_no_line"
                                     android:textColor="@color/controlled_text_muted"
                                     android:textSize="13sp" />
                             </LinearLayout>
+                        </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="end"
-                                android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_test_tcp"
-                                    style="@style/Widget.Material3.Button.OutlinedButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="44dp"
-                                    android:minWidth="96dp"
-                                    android:text="@string/controlled_nodes_test_tcp"
-                                    android:textColor="@color/controlled_ink"
-                                    app:cornerRadius="8dp"
-                                    app:icon="@drawable/ic_check_update_24dp"
-                                    app:iconPadding="6dp"
-                                    app:iconTint="@color/controlled_ink"
-                                    app:strokeColor="@color/controlled_outline_soft" />
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_test_tcp"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_weight="1"
+                                android:minHeight="48dp"
+                                android:text="@string/controlled_nodes_test_tcp"
+                                android:textColor="@color/controlled_ink"
+                                android:textSize="14sp"
+                                app:cornerRadius="18dp"
+                                app:icon="@drawable/ic_activity_24dp"
+                                app:iconPadding="8dp"
+                                app:iconTint="@color/controlled_connect"
+                                app:strokeColor="@color/controlled_outline_soft" />
 
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_quick_sync"
-                                    style="@style/Widget.Material3.Button.OutlinedButton"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="44dp"
-                                    android:layout_marginTop="8dp"
-                                    android:minWidth="96dp"
-                                    android:text="@string/controlled_home_sync"
-                                    android:textColor="@color/controlled_ink"
-                                    app:cornerRadius="8dp"
-                                    app:icon="@drawable/ic_cloud_download_24dp"
-                                    app:iconPadding="6dp"
-                                    app:iconTint="@color/controlled_ink"
-                                    app:strokeColor="@color/controlled_outline_soft" />
-                            </LinearLayout>
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_quick_sync"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="0dp"
+                                android:layout_height="48dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:minHeight="48dp"
+                                android:text="@string/controlled_home_sync"
+                                android:textColor="@color/controlled_ink"
+                                android:textSize="14sp"
+                                app:cornerRadius="18dp"
+                                app:icon="@drawable/ic_cloud_download_24dp"
+                                app:iconPadding="8dp"
+                                app:iconTint="@color/controlled_connect"
+                                app:strokeColor="@color/controlled_outline_soft" />
                         </LinearLayout>
 
                         <ScrollView
                             android:layout_width="match_parent"
                             android:layout_height="0dp"
-                            android:layout_marginTop="14dp"
+                            android:layout_marginTop="16dp"
                             android:layout_weight="1"
-                            android:fillViewport="true">
+                            android:clipToPadding="false"
+                            android:fillViewport="true"
+                            android:paddingBottom="4dp">
 
                             <LinearLayout
                                 android:id="@+id/ll_node_list"
@@ -301,78 +356,131 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:paddingStart="18dp"
-                        android:paddingTop="14dp"
-                        android:paddingEnd="18dp"
-                        android:paddingBottom="14dp"
+                        android:paddingTop="18dp"
                         android:visibility="gone">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/controlled_mine_title"
+                            android:includeFontPadding="false"
+                            android:text="@string/controlled_tab_mine"
                             android:textColor="@color/controlled_ink"
-                            android:textSize="24sp"
+                            android:textSize="28sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:background="@drawable/bg_controlled_surface_panel"
+                            android:layout_height="108dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/bg_controlled_usage_panel"
+                            android:elevation="4dp"
+                            android:gravity="center_vertical"
                             android:orientation="vertical"
-                            android:padding="16dp">
+                            android:paddingStart="20dp"
+                            android:paddingTop="16dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="18dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="@string/controlled_home_usage"
+                                android:textColor="@color/controlled_text_muted"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_mine_traffic"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:includeFontPadding="false"
+                                android:text="0 GB / --"
+                                android:textColor="@color/controlled_ink"
+                                android:textSize="28sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_controlled_surface_panel"
+                            android:elevation="4dp"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:paddingStart="18dp"
+                            android:paddingTop="18dp"
+                            android:paddingEnd="18dp"
+                            android:paddingBottom="18dp">
+
+                            <TextView
+                                android:layout_width="52dp"
+                                android:layout_height="52dp"
+                                android:background="@drawable/bg_controlled_ios_avatar"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:text="H"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tv_mine_user"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
                                 android:text="@string/controlled_not_logged_in"
                                 android:textColor="@color/controlled_ink"
-                                android:textSize="20sp"
+                                android:textSize="22sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tv_mine_status"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
+                                android:layout_marginTop="12dp"
+                                android:includeFontPadding="false"
                                 android:textColor="@color/controlled_text_muted"
-                                android:textSize="15sp" />
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/tv_mine_expire"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="8dp"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
                                 android:textColor="@color/controlled_text_muted"
-                                android:textSize="15sp" />
-
-                            <TextView
-                                android:id="@+id/tv_mine_traffic"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:textColor="@color/controlled_text_muted"
-                                android:textSize="15sp" />
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/tv_mine_device"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="8dp"
                                 android:ellipsize="middle"
+                                android:includeFontPadding="false"
                                 android:maxLines="1"
                                 android:textColor="@color/controlled_text_muted"
-                                android:textSize="15sp" />
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/tv_mine_last_sync"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="8dp"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
                                 android:textColor="@color/controlled_text_muted"
-                                android:textSize="15sp" />
+                                android:textSize="14sp" />
                         </LinearLayout>
 
                         <com.google.android.material.button.MaterialButton
@@ -381,12 +489,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:layout_marginTop="14dp"
+                            android:minHeight="50dp"
                             android:text="@string/controlled_mine_manage"
                             android:textColor="@color/controlled_ink"
-                            app:cornerRadius="8dp"
+                            android:textSize="14sp"
+                            app:cornerRadius="18dp"
                             app:icon="@drawable/ic_lock_24dp"
                             app:iconPadding="8dp"
-                            app:iconTint="@color/controlled_ink"
+                            app:iconTint="@color/controlled_connect"
                             app:strokeColor="@color/controlled_outline_soft" />
 
                         <com.google.android.material.button.MaterialButton
@@ -395,12 +505,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:layout_marginTop="10dp"
+                            android:minHeight="50dp"
                             android:text="@string/controlled_mine_check_update"
                             android:textColor="@color/controlled_ink"
-                            app:cornerRadius="8dp"
+                            android:textSize="14sp"
+                            app:cornerRadius="18dp"
                             app:icon="@drawable/ic_cloud_download_24dp"
                             app:iconPadding="8dp"
-                            app:iconTint="@color/controlled_ink"
+                            app:iconTint="@color/controlled_connect"
                             app:strokeColor="@color/controlled_outline_soft" />
                     </LinearLayout>
                 </FrameLayout>
@@ -408,21 +520,21 @@
                 <LinearLayout
                     android:id="@+id/bottom_nav"
                     android:layout_width="match_parent"
-                    android:layout_height="68dp"
-                    android:background="#F8FFFFFF"
-                    android:elevation="8dp"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_controlled_ios_bottom_nav"
+                    android:elevation="10dp"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="18dp"
-                    android:paddingBottom="8dp">
+                    android:paddingStart="6dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="6dp">
 
                     <TextView
                         android:id="@+id/nav_proxy"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
@@ -436,8 +548,8 @@
                         android:id="@+id/nav_nodes"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
@@ -450,7 +562,6 @@
                         android:id="@+id/nav_mine"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="8dp"
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"

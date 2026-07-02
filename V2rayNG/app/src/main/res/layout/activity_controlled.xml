@@ -1,102 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_controlled_home"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="20dp"
+        android:paddingTop="26dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/controlled_backend_url"
-            android:visibility="gone"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/et_backend_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="http://43.108.8.13"
-            android:inputType="textUri"
-            android:visibility="gone"
-            android:singleLine="true" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="@string/controlled_username"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/et_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/controlled_username_hint"
-            android:inputType="textPersonName"
-            android:singleLine="true" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="@string/controlled_license_code"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/et_license_code"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/controlled_license_code_hint"
-            android:inputType="textPassword"
-            android:singleLine="true" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="@string/controlled_device_id"
-            android:visibility="gone"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:background="@drawable/bg_controlled_ios_avatar"
+            android:elevation="8dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="H"
+            android:textColor="@color/colorWhite"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv_device_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:textIsSelectable="true" />
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/controlled_home_title"
+            android:textColor="@color/controlled_ink"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tv_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:padding="12dp"
-            android:background="@color/md_theme_surfaceVariant"
-            android:text="@string/controlled_not_logged_in" />
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/controlled_login_and_sync"
+            android:textColor="@color/controlled_text_muted"
+            android:textSize="14sp" />
 
-        <Button
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_controlled_ios_card"
+            android:elevation="6dp"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/controlled_backend_url"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/et_backend_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="http://43.108.8.13"
+                android:inputType="textUri"
+                android:singleLine="true"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/controlled_username"
+                android:textColor="@color/controlled_ink"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="9dp"
+                android:background="@drawable/bg_controlled_ios_input"
+                android:hint="@string/controlled_username_hint"
+                android:includeFontPadding="false"
+                android:inputType="textPersonName"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:singleLine="true"
+                android:textColor="@color/controlled_ink"
+                android:textColorHint="@color/controlled_text_muted"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:includeFontPadding="false"
+                android:text="@string/controlled_license_code"
+                android:textColor="@color/controlled_ink"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_license_code"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="9dp"
+                android:background="@drawable/bg_controlled_ios_input"
+                android:hint="@string/controlled_license_code_hint"
+                android:includeFontPadding="false"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:singleLine="true"
+                android:textColor="@color/controlled_ink"
+                android:textColorHint="@color/controlled_text_muted"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/controlled_device_id"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_device_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_controlled_ios_soft_blue"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/controlled_not_logged_in"
+                android:textColor="@color/controlled_connect"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_login"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/controlled_login_and_sync" />
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
+            android:elevation="6dp"
+            android:minHeight="54dp"
+            android:text="@string/controlled_login_and_sync"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/controlled_connect"
+            app:cornerRadius="22dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sync"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/controlled_sync" />
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:minHeight="52dp"
+            android:text="@string/controlled_sync"
+            android:textColor="@color/controlled_ink"
+            android:textSize="15sp"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_cloud_download_24dp"
+            app:iconPadding="8dp"
+            app:iconTint="@color/controlled_connect"
+            app:strokeColor="@color/controlled_outline_soft" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/controlled_logout" />
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:minHeight="52dp"
+            android:text="@string/controlled_logout"
+            android:textColor="@color/controlled_danger"
+            android:textSize="15sp"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/controlled_outline_soft" />
     </LinearLayout>
 </ScrollView>
