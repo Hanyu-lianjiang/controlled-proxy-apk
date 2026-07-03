@@ -46,13 +46,13 @@
     <string name="controlled_nodes_title">Select line</string>
     <string name="controlled_nodes_all">All nodes</string>
     <string name="controlled_nodes_selected_format">Selected: %1$s</string>
-    <string name="controlled_nodes_test_tcp">Connectivity test</string>
+    <string name="controlled_nodes_test_tcp">Real connection test</string>
     <string name="controlled_nodes_test_testing">Testing</string>
     <string name="controlled_nodes_test_success">%1$dms</string>
     <string name="controlled_nodes_test_failed">Failed</string>
     <string name="controlled_nodes_test_no_nodes">No nodes to test</string>
-    <string name="controlled_nodes_test_done">Connectivity test finished</string>
-    <string name="controlled_home_sync">Sync</string>
+    <string name="controlled_nodes_test_done">Real connection test finished</string>
+    <string name="controlled_home_sync">Update lines</string>
     <string name="controlled_home_account">Account</string>
     <string name="controlled_home_usage">Remaining traffic</string>
     <string name="controlled_home_unlimited">Unlimited</string>
@@ -460,6 +460,7 @@
     <string name="update_already_latest_version">Already on the latest version</string>
     <string name="update_new_version_found">New version found: %s</string>
     <string name="update_now">Update now</string>
+    <string name="update_close">Close</string>
     <string name="update_check_pre_release">Check Pre-release</string>
     <string name="update_checking_for_update">Checking for update…</string>
     <string name="update_download_failed">Download failed</string>

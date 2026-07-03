@@ -31,6 +31,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
+import com.v2ray.ang.core.CoreConfigManager
+import com.v2ray.ang.core.CoreNativeManager
 import com.v2ray.ang.core.CoreServiceManager
 import com.v2ray.ang.control.ControlledApi
 import com.v2ray.ang.control.ControlledApiException
@@ -64,10 +66,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.net.InetSocketAddress
-import java.net.Socket
 import java.util.Locale
-import kotlin.system.measureTimeMillis
 
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private enum class DashboardTab {
@@ -669,21 +668,16 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         }
         if (tcpTestJob?.isActive == true) return
 
-        val targets = serverIds.map { guid ->
-            val profile = MmkvManager.decodeServerConfig(guid)
-            Triple(guid, profile?.server, profile?.serverPort)
-        }
-
         tcpTestResults.clear()
-        targets.forEach { (guid, _, _) -> tcpTestResults[guid] = TcpTestState.Testing }
+        serverIds.forEach { guid -> tcpTestResults[guid] = TcpTestState.Testing }
         refreshSimpleDashboard()
 
         tcpTestJob = lifecycleScope.launch {
             binding.btnTestTcp.isEnabled = false
             try {
-                val results = targets.map { (guid, host, port) ->
+                val results = serverIds.map { guid ->
                     async(Dispatchers.IO) {
-                        guid to testTcpConnection(host, port)
+                        guid to testRealNodeConnection(guid)
                     }
                 }.awaitAll()
                 results.forEach { (guid, result) -> tcpTestResults[guid] = result }
@@ -695,17 +689,15 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         }
     }
 
-    private fun testTcpConnection(host: String?, portText: String?): TcpTestState {
-        val normalizedHost = host?.trim()?.takeIf { it.isNotBlank() } ?: return TcpTestState.Failed
-        val port = portText?.trim()?.toIntOrNull()?.takeIf { it in 1..65535 } ?: return TcpTestState.Failed
+    private fun testRealNodeConnection(guid: String): TcpTestState {
         return try {
-            val elapsed = measureTimeMillis {
-                Socket().use { socket ->
-                    socket.connect(InetSocketAddress(normalizedHost, port), 3_000)
-                }
-            }
-            TcpTestState.Success(elapsed)
-        } catch (_: Exception) {
+            CoreNativeManager.initCoreEnv(applicationContext)
+            val configResult = CoreConfigManager.getV2rayConfig4Speedtest(this, guid)
+            if (!configResult.status) return TcpTestState.Failed
+            val elapsed = CoreNativeManager.measureOutboundDelay(configResult.content, SettingsManager.getDelayTestUrl())
+            if (elapsed >= 0L) TcpTestState.Success(elapsed) else TcpTestState.Failed
+        } catch (e: Exception) {
+            LogUtil.e(AppConfig.TAG, "Real connection test failed for $guid", e)
             TcpTestState.Failed
         }
     }
@@ -779,10 +771,9 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 val result = UpdateCheckerManager.checkForUpdate(includePreRelease = false)
                 pendingAppUpdate = result.takeIf { it.hasUpdate }
                 refreshUpdateButton()
-                if (auto) return@launch
                 if (result.hasUpdate) {
                     showAppUpdateDialog(result)
-                } else {
+                } else if (!auto) {
                     toast(R.string.update_already_latest_version)
                 }
             } catch (e: Exception) {
@@ -820,7 +811,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                     downloadAndInstallUpdate(url, result.latestVersion.orEmpty())
                 }
             }
-            .setNegativeButton(android.R.string.cancel, null)
+            .setNegativeButton(R.string.update_close, null)
             .show()
     }
 
