@@ -12,8 +12,8 @@ android {
         applicationId = "com.v2ray.ang.internal"
         minSdk = 24
         targetSdk = 37
-        versionCode = 10009
-        versionName = "1.0.9"
+        versionCode = 10010
+        versionName = "1.0.10"
         multiDexEnabled = true
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
@@ -38,9 +38,30 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val compatReleaseStoreFilePath = project.providers.gradleProperty("COMPAT_RELEASE_STORE_FILE").orNull
+    val hasCompatReleaseSigning = !compatReleaseStoreFilePath.isNullOrBlank()
+
+    signingConfigs {
+        create("compatRelease") {
+            if (hasCompatReleaseSigning) {
+                storeFile = file(compatReleaseStoreFilePath!!)
+                storePassword = project.providers.gradleProperty("COMPAT_RELEASE_STORE_PASSWORD").orNull ?: ""
+                keyAlias = project.providers.gradleProperty("COMPAT_RELEASE_KEY_ALIAS").orNull ?: ""
+                keyPassword = project.providers.gradleProperty("COMPAT_RELEASE_KEY_PASSWORD").orNull ?: ""
+            }
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+            enableV4Signing = false
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (hasCompatReleaseSigning) {
+                signingConfig = signingConfigs.getByName("compatRelease")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
